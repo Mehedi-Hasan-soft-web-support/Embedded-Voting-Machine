@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESRC Election Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .position-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .position-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .position-card.president {
+            border-top-color: #e74c3c;
+        }
+
+        .position-card.secretary {
+            border-top-color: #f39c12;
+        }
+
+        .position-card.vp {
+            border-top-color: #9b59b6;
+        }
+
+        .position-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .position-title.president {
+            color: #e74c3c;
+        }
+
+        .position-title.secretary {
+            color: #f39c12;
+        }
+
+        .position-title.vp {
+            color: #9b59b6;
+        }
+
+        .candidate {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate.winner {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .candidate.loser {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .candidate-votes {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .winner-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f1c40f;
+            color: #2c3e50;
+            padding: 5px 10px;
+            border-radius: 0 10px 0 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin: 40px 0;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .total-votes {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .total-votes h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .total-votes .count {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 ESRC Election Results</h1>
+            <p>Live voting results dashboard</p>
+            <button class="refresh-btn" onclick="fetchResults()">🔄 Refresh Results</button>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading election results...
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            Failed to load results. Please check your connection and try again.
+        </div>
+
+        <div id="results" class="results-grid" style="display: none;">
+            <!-- Results will be populated here -->
+        </div>
+
+        <div id="totalVotes" class="total-votes" style="display: none;">
+            <h3>Total Votes Cast</h3>
+            <div class="count" id="totalCount">0</div>
+        </div>
+    </div>
+
+    <script>
+        const CHANNEL_ID = '2971828';
+        const READ_API_KEY = 'W25X1120XKMTH3KO';
+        const API_URL = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${READ_API_KEY}&results=1`;
+
+        const positions = [
+            {
+                title: 'President',
+                class: 'president',
+                candidates: ['Sami', 'Trisha'],
+                fields: ['field1', 'field2']
+            },
+            {
+                title: 'General Secretary',
+                class: 'secretary',
+                candidates: ['Sadat', 'Nipa'],
+                fields: ['field3', 'field4']
+            },
+            {
+                title: 'Vice President',
+                class: 'vp',
+                candidates: ['Nisa', 'Shuvojit'],
+                fields: ['field5', 'field6']
+            }
+        ];
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('totalVotes').style.display = 'none';
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('totalVotes').style.display = 'none';
+        }
+
+        function showResults(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('results').style.display = 'grid';
+            document.getElementById('totalVotes').style.display = 'block';
+
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            let totalVotes = 0;
+
+            positions.forEach(position => {
+                const votes = [
+                    parseInt(data[position.fields[0]] || 0),
+                    parseInt(data[position.fields[1]] || 0)
+                ];
+
+                totalVotes += votes[0] + votes[1];
+
+                const winnerIndex = votes[0] > votes[1] ? 0 : (votes[1] > votes[0] ? 1 : -1);
+
+                const card = document.createElement('div');
+                card.className = `position-card ${position.class}`;
+                
+                card.innerHTML = `
+                    <h3 class="position-title ${position.class}">${position.title}</h3>
+                    ${position.candidates.map((candidate, index) => `
+                        <div class="candidate ${winnerIndex === index ? 'winner' : 'loser'}">
+                            ${winnerIndex === index ? '<div class="winner-badge">WINNER</div>' : ''}
+                            <span class="candidate-name">${candidate}</span>
+                            <span class="candidate-votes">${votes[index]} votes</span>
+                        </div>
+                    `).join('')}
+                `;
+
+                resultsContainer.appendChild(card);
+            });
+
+            document.getElementById('totalCount').textContent = totalVotes;
+        }
+
+        async function fetchResults() {
+            showLoading();
+
+            try {
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data); // Debug log
+                
+                // ThingSpeak returns an object with feeds array
+                if (data.feeds && data.feeds.length > 0) {
+                    const latestData = data.feeds[data.feeds.length - 1];
+                    showResults(latestData);
+                } else {
+                    throw new Error('No data available');
+                }
+                
+            } catch (error) {
+                console.error('Error fetching results:', error);
+                showError();
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(fetchResults, 30000);
+
+        // Initial load
+        fetchResults();
+    </script>
+</body>
+</html>
