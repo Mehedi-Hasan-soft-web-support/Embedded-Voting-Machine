@@ -1,6 +1,7 @@
 # Embedded-Voting-Machine with Coupon Authentication and ThingSpeak Cloud Integration
 
 This project implements a microcontroller-based Electronic Voting Machine (EVM) using an ESP32, I2C LCD, 4x4 keypad, and ThingSpeak for cloud-based vote tracking. The voting system supports unique coupon-based voter authentication to prevent duplicate voting.
+https://mehedi-hasan-soft-web-support.github.io/Embedded-Voting-Machine-with-Coupon-Authentication-and-ThingSpeak-Cloud-Integration/ 
 
 ## 🔧 Features
 
